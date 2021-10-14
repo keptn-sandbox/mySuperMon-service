@@ -1,1 +1,1 @@
-# mysupermoon-service
+# mySuperMon-service
