@@ -1,0 +1,38 @@
+{
+  "data": {
+    "configurationChange": {
+      "values": {
+        "image": "docker.io/keptnexamples/carts:0.12.1"
+      }
+    },
+    "deployment": {
+      "deploymentNames": [
+        "direct"
+      ],
+      "deploymentURIsLocal": [
+        "http://carts.sockshop-dev:80"
+      ],
+      "deploymentURIsPublic": [
+        "http://carts.sockshop-dev.127.0.0.1.nip.io:8082"
+      ],
+      "deploymentstrategy": "direct",
+      "gitCommit": "1a11da4b0a626079a77b2bbf342e6145b64bce47"
+    },
+    "message": "",
+    "project": "sockshop",
+    "result": "pass",
+    "service": "carts",
+    "stage": "dev",
+    "status": "succeeded",
+    "test": {
+      "teststrategy": "functional"
+    }
+  },
+  "id": "16b0bfde-29b8-4161-ac00-04533c95b190",
+  "source": "shipyard-controller",
+  "specversion": "1.0",
+  "time": "2021-10-08T06:00:14.899Z",
+  "type": "sh.keptn.event.test.triggered",
+  "shkeptncontext": "a180fcaf-53af-4c21-a7d9-0f97134e4834",
+  "shkeptnspecversion": "0.2.3"
+}
