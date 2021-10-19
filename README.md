@@ -59,7 +59,7 @@ Before mySuperMon-service installation there are some prerequite need to follow.
 
     ```
     ################################################################
-    ########## Agent Unique Id : 9604729ADE98MONGO-AGENT-DEPLOY-77C99D9885-9D882190-MONGODB ################
+    ########## Agent Unique Id : 9604729ADE98MONGO-AGENT-DEPLOY-XXXXXXXXXX-9D882190-MONGODB ################
     ################################################################
 
     ```
