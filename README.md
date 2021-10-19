@@ -12,7 +12,7 @@ Checkout also the [installation option for Keptn on K3s](https://github.com/kept
 Before mySuperMon-service installation there are some prerequite need to follow.
 ### Deploy mySuperMon database Agent
 
-1. Create a mysupermon-agent.yml file and copy below yml content paste into it.  and IMAGE_NAME with image name you need (), you can find myspermon agent images here [mySuperMon Docker hub](https://hub.docker.com/u/mysupermon)
+1. Create a mysupermon-agent.yaml file and copy below yaml content paste into it.  and IMAGE_NAME with image name you need (), you can find myspermon agent images here [mySuperMon Docker hub](https://hub.docker.com/u/mysupermon)
 
     **NOTE**
     1. Replace AGENT_DATABASE_NAME with the agent supported database name
@@ -45,10 +45,10 @@ Before mySuperMon-service installation there are some prerequite need to follow.
                 - containerPort: 8111  
     ```
 
-1. Apply the mysupermon-agent.yml file using below command in the in the same cluster that Keptn is running in.
+1. Apply the mysupermon-agent.yaml file using below command in the in the same cluster that Keptn is running in.
 
     ```
-    kubectl apply -f mysupermon-agent.yml -n keptn
+    kubectl apply -f mysupermon-agent.yaml -n keptn
     ```
 
 1. After deploying the agent check the logs of agent using below command and copy Agent unique id
@@ -122,9 +122,9 @@ Now we will deploy the mySuperMon Service in the Keptn Cluster.
     git clone https://github.com/keptn-sandbox/mySuperMon-service.git
     ```
 
-2. Before applying deployment file add your KEPTN_ENDPOINT url and KEPTN_API_TOKEN to the deploy/service.yml 'env section'.
+2. Before applying deployment file add your KEPTN_ENDPOINT url and KEPTN_API_TOKEN to the deploy/service.yaml 'env section'.
 
-    ```yaml
+    ```yml
     ...
     env:
         - name: KEPTN_ENDPOINT
@@ -135,10 +135,10 @@ Now we will deploy the mySuperMon Service in the Keptn Cluster.
           value: 'https://app.mysupermon.com'
     ...
     ```
-3. Apply deploy/service.yml file.
+3. Apply deploy/service.yaml file.
 
     ```
-    kubectl apply -f service.yml -n keptn
+    kubectl apply -f service.yaml -n keptn
     ```
 
 4. Verify mysupermon service is running user authenticated.
@@ -180,8 +180,8 @@ Now trigger a delivery for carts service.
 
 ### Common tasks
 
-* Deploy the service using `kubectl`: `kubectl apply -f deploy/service.yml`
-* Delete/undeploy the service using `kubectl`: `kubectl delete -f deploy/service.yml`
+* Deploy the service using `kubectl`: `kubectl apply -f deploy/service.yaml`
+* Delete/undeploy the service using `kubectl`: `kubectl delete -f deploy/service.yaml`
 * Watch the deployment using `kubectl`: `kubectl -n keptn get deployment mysupermon-service -o wide`
 * Get logs using `kubectl`: `kubectl -n keptn logs deployment/mysupermon-service -f mysupermon-service`
 * Watch the deployed pods using `kubectl`: `kubectl -n keptn get pods -l run=mysupermon-service`
