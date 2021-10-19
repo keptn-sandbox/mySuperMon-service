@@ -1,6 +1,6 @@
 # mySuperMon-service
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/keptn-contrib/mysupermon-service?include_prereleases)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/keptn-sandbox/mysupermon-service?display_name=tag)
 
 The *mysupermon-service* is a [Keptn](https://keptn.sh) service that is responsible for collecting datatbase statistics performed while test sequence executed using [mySuperMon](https://app.mysupermon.com) endpoints.
 
