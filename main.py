@@ -35,6 +35,10 @@ def deployment_triggered(keptn: Keptn, shkeptncontext: str, event, data):
 
 Keptn.on('deployment.triggered', deployment_triggered)
 
+def get_run_situation_details(headers):
+    response=requests.get(f"{mysupermon_endpoint}/devaten/data/getRunSituation",headers=headers)
+    print(response.json())
+
 def start_recording(keptn: Keptn, shkeptncontext: str, event, data):
     print("------- IN START RECORDING -------")
     details=json.loads(json.dumps(data))
@@ -86,15 +90,22 @@ def start_recording(keptn: Keptn, shkeptncontext: str, event, data):
 Keptn.on('test.triggered', start_recording)
 
 def stop_recording(keptn: Keptn, shkeptncontext: str, event, data, mysupermon_app_identifier):
-    time.sleep(120)
-    print("------- IN STOP RECORDING -------")
     details=json.loads(json.dumps(data))
-    usecaseIdentifier = f"{details['project']}-{details['service']}-{details['stage']}"
-    print("mysupermon_app_identifier=", mysupermon_app_identifier)
-    payload = {'usecaseIdentifier': usecaseIdentifier,'inputSource': 'application'}
     headers = {'Authorization': f"Bearer {Keptn.mysupermon_token}",
                'applicationIdentifier': mysupermon_app_identifier,
                'Content-Type':'application/json'}
+    print("listening for test finished...")
+    while True:
+        if(Keptn.listen_test_finished(details, shkeptncontext)):
+            break
+        else:
+            get_run_situation_details(headers)
+            time.sleep(10)
+    
+    print("------- IN STOP RECORDING -------")
+    usecaseIdentifier = f"{details['project']}-{details['service']}-{details['stage']}"
+    print("mysupermon_app_identifier=", mysupermon_app_identifier)
+    payload = {'usecaseIdentifier': usecaseIdentifier,'inputSource': 'application'}
     response=requests.get(f"{mysupermon_endpoint}/devaten/data/stopRecording",params=payload,headers=headers)
     print(f"{response.status_code}  -->  {json.loads(response.text)}")
     rs = json.loads(response.text)

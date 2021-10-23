@@ -16,6 +16,7 @@ KEPTN_DISTRIBUTOR = "http://127.0.0.1:8081"
 KEPTN_API_EVENT_ENDPOINT = "/event" # will be set to /v1/event in case of authenticated handler
 KEPTN_API_TRIGGERED_URL = "/controlPlane/v1/event/triggered/sh.keptn.event.{event_type}"
 KEPTN_API_METADATA_URL = "/v1/metadata"
+KEPTN_API_LISTEN_TEST_FINISHED = "/controlPlane/v1/project/{project}/stage/{stage}/service/{service}"
 
 POLLING_TIME_SECONDS = 10
 
@@ -164,6 +165,17 @@ class Keptn:
         elif rs['error'] == "invalid_grant":
             print("ERROR --> Invalid mysupermon credentials.")
 
+    def listen_test_finished(data, keptncontext):
+        response = KEPTN_API.get(KEPTN_API_LISTEN_TEST_FINISHED.format(
+            project=data['project'],
+            stage=data['stage'],
+            service=data['service']
+        ))
+        data = json.loads(response.content)
+        if (data["lastEventTypes"]["sh.keptn.event.test.finished"]["keptnContext"]==keptncontext):
+            return True
+        else:
+            return False
 
     def _post_cloud_event(self, body, headers):
         resp = KEPTN_API.post(KEPTN_API_EVENT_ENDPOINT, body, headers)
