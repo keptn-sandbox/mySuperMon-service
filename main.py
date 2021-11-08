@@ -11,7 +11,7 @@ from keptn import Keptn, start_polling
 app = Flask(__name__)
 CONTENT_TYPE_LATEST = str('text/plain; version=0.0.4; charset=utf-8')
 # Port on which to listen for cloudevents
-PORT = os.getenv('RCV_PORT', '8083')
+PORT = os.getenv('RCV_PORT', '8080')
 #  Path to which cloudevents are sent
 PATH = os.getenv('RCV_PATH', '/')
 memory_gauge = Gauge(
