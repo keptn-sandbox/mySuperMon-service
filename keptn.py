@@ -102,7 +102,6 @@ class Keptn:
     mysupermon_token = ""
     mysupermon_app_identifier=""
     recording_flag = False
-    metrics_flag = False
     metrics = {}
 
     def __init__(self, event):

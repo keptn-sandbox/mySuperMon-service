@@ -27,12 +27,15 @@ def gotevent():
     keptn.handle_cloud_event()
     return "", 204
 
+#called when deployment triggered and authenticate mysupermon session
 def deployment_triggered(keptn: Keptn, shkeptncontext: str, event, data):
     print("Verifying mySuperMon session...")
     Keptn.set_auth(os.environ["MYSUPERMON_USERNAME"], os.environ["MYSUPERMON_PASSWORD"])
 
+# register deployment triggered handler
 Keptn.on('deployment.triggered', deployment_triggered)
 
+#metrics endpoint for preometheus target
 @app.route('/metrics', methods=['GET'])
 def get_run_situation_details():
     headers = {'Authorization': f"Bearer {Keptn.mysupermon_token}",'applicationIdentifier': Keptn.mysupermon_app_identifier,'Content-Type':'application/json'}
@@ -40,25 +43,24 @@ def get_run_situation_details():
         response=requests.get(f"{os.environ['MYSUPERMON_ENDPOINT']}/devaten/data/getRunSituation",headers=headers)
         print(response.json())
         data = json.loads(response.text)
-        if not Keptn.metrics_flag:
-            Keptn.metrics = get_config(data["data"]['runSituationResult'][0]["databaseType"])
+        #get database metrics
+        metrics = Keptn.metrics[data["data"]['runSituationResult'][0]["databaseType"]]
         for key in data["data"]['runSituationResult'][0]["data"]:
-            if (isinstance(data["data"]['runSituationResult'][0]["data"][key], int)) and (Keptn.metrics.get(key) is not None):
-                Keptn.metrics[key].observe(data["data"]['runSituationResult'][0]["data"][key])
+            if (isinstance(data["data"]['runSituationResult'][0]["data"][key], int)) and (metrics.get(key) is not None):
+                metrics[key].observe(data["data"]['runSituationResult'][0]["data"][key])
         return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
     else:
         memory_gauge.set(time.time())
         return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
-def get_config(dbtype):
+#Prepare metrics for pushing run situation data
+def prepare_metrics():
     f = open('dbconfig/metrics.json',)
     data = json.load(f)
-    metrics = {}
-    for metric in data[dbtype]:
-        metrics[metric["name"]] = Histogram(metric["name"],metric["description"])
-    Keptn.metrics_flag = True
-    print(metrics)
-    return metrics
+    for dbtype in data:
+        Keptn.metrics[dbtype]={}
+        for metric in data[dbtype]:
+            Keptn.metrics[dbtype][metric["name"]] = Histogram(metric["name"],metric["description"])
 
 
 def start_recording(keptn: Keptn, shkeptncontext: str, event, data):
@@ -111,9 +113,10 @@ def start_recording(keptn: Keptn, shkeptncontext: str, event, data):
 # register start recording handler
 Keptn.on('test.triggered', start_recording)
 
-
+# stop recording 
 def stop_recording(keptn: Keptn, shkeptncontext: str, event, data, usecaseIdentifier, headers):
     details=json.loads(json.dumps(data))
+    #Listening test finished event for calling stop recording api 
     print("listening for test finished...")
     while True:
         if(Keptn.listen_test_finished(details, shkeptncontext)):
@@ -151,17 +154,17 @@ def stop_recording(keptn: Keptn, shkeptncontext: str, event, data, usecaseIdenti
         keptn.send_task_status_changed_cloudevent(message="ERROR --> There some problem!", result="fail" , status="errored")
         print("ERROR --> There some problem!")
     Keptn.recording_flag = False
-    Keptn.metrics = {}
-    Keptn.metrics_flag = False
 
 
 if __name__ == "__main__":
     if "KEPTN_API_TOKEN" in os.environ and "KEPTN_ENDPOINT" in os.environ and os.environ["KEPTN_API_TOKEN"] and os.environ["KEPTN_ENDPOINT"] and os.environ["MYSUPERMON_USERNAME"] and os.environ["MYSUPERMON_PASSWORD"] and os.environ['MYSUPERMON_ENDPOINT']:
         print("Found environment variables KEPTN_ENDPOINT and KEPTN_API_TOKEN, polling events from API")
         print("Found enviroment variables MYSUPERMON_USERNAME, MYSUPERMON_PASSWORD, MYSUPERMON_ENDPOINT, Authenticating user ...")
+        #Check validity of mysupermon credentials
         Keptn.set_auth(os.environ["MYSUPERMON_USERNAME"], os.environ["MYSUPERMON_PASSWORD"])
         thread = start_polling(os.environ["KEPTN_ENDPOINT"], os.environ["KEPTN_API_TOKEN"])
-
+        #calling prepare_metrics on service start
+        prepare_metrics()
         if not thread:
             print("ERROR: Failed to start polling thread, exiting")
             sys.exit(1)
