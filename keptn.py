@@ -38,8 +38,8 @@ RESULT_FAIL = "fail"
 
 ALLOWED_RESULTS = [RESULT_PASS, RESULT_WARNING, RESULT_FAIL]
 
-TOKEN_AUTH_USERNAME = "performanceDashboardClientId"
-TOKEN_AUTH_PASSWORD = "ljknsqy9tp6123"
+TOKEN_AUTH_USERNAME = ""
+TOKEN_AUTH_PASSWORD = ""
 MYSUPERMON_ENDPOINT = os.environ['MYSUPERMON_ENDPOINT']
 
 class KeptnApiConnection:
@@ -102,7 +102,10 @@ class Keptn:
     mysupermon_token = ""
     mysupermon_app_identifier=""
     recording_flag = False
-    metrics = {}
+    run_metrics = {}
+    stop_metrics = {}
+    dbtype = ""
+    stop_payload = []
 
     def __init__(self, event):
         self.sh_keptn_context = None
