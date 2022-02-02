@@ -9,10 +9,10 @@ Checkout also the [installation option for Keptn on K3s](https://github.com/kept
 
 ## Installation
 
-Before mySuperMon-service installation there are some prerequite need to follow.
+Before mySuperMon-service installation there are some prerequisite need to follow.
 ### Deploy mySuperMon database Agent
 
-1. Create a mysupermon-agent.yaml file and copy below yaml content paste into it.  and IMAGE_NAME with image name you need (), you can find myspermon agent images here [mySuperMon Docker hub](https://hub.docker.com/u/mysupermon)
+1. Create a mysupermon-agent.yaml file and copy below yaml content paste into it. Replace IMAGE_NAME with image name you need, you can find myspermon agent images here [mySuperMon Docker hub](https://hub.docker.com/u/mysupermon)
 
     **NOTE**
     1. Replace AGENT_DATABASE_NAME with the agent supported database name
@@ -69,7 +69,7 @@ Before mySuperMon-service installation there are some prerequite need to follow.
 
 1. Visit to [mySuperMon](https://app.mysupermon.com) and log in.
 
-1. Click on *Agent -> Agent Management* in the side menu and fill the form. Paste the Agent Unique Id in the *Agent Unique Id* field.
+1. Click on *Agent -> Agent Management* in the side menu and fill the form. Paste the Agent Unique Id (9604729ADE98MONGO-AGENT-DEPLOY-XXXXXXXXXX-9D882190-MONGODB) in the *Agent Unique Id* field.
 
 ![](./images/add-agent.png)
 
@@ -116,32 +116,19 @@ Now we will deploy the mySuperMon Service in the Keptn Cluster.
     kubectl create secret generic mysupermon --from-literal="mysupermon_username=YOUR_MYSUPERMON_USERNAME" --from-literal="mysupermon_password=YOUR_MYSUPERMON_PASSWORD" -n keptn
     ```
 
-1. Now clone the muysupermon service repo
+1. Now clone the mysupermon service repo
 
     ```console
     git clone https://github.com/keptn-sandbox/mySuperMon-service.git
     ```
 
-2. Before applying deployment file add your KEPTN_ENDPOINT url and KEPTN_API_TOKEN to the [`deploy/service.yaml`](deploy/service.yaml) 'env section'.
-
-    ```yml
-    ...
-    env:
-        - name: KEPTN_ENDPOINT
-          value: '' #TODO: Add your keptn api endpoint eg: http://1.2.3.4.nip.io/api
-        - name: KEPTN_API_TOKEN
-          value: '' #TODO: Add your keptn api token
-        - name: MYSUPERMON_ENDPOINT
-          value: 'https://app.mysupermon.com'
-    ...
-    ```
-3. Apply [`deploy/service.yaml`](deploy/service.yaml) file.
+2. Apply [`deploy/service.yaml`](deploy/service.yaml) file.
 
     ```console
     kubectl apply -f service.yaml -n keptn
     ```
 
-4. Verify mysupermon service is running user authenticated.
+3. Verify mysupermon service is running and user authenticated.
 
     ```console
     kubectl -n keptn logs -f deployment/mysupermon-service -c mysupermon-service
@@ -156,6 +143,39 @@ Now we will deploy the mySuperMon Service in the Keptn Cluster.
     Exit using CTRL-C
 
     ```
+
+### Enable prometheus monitoring
+
+To enable the prometheus monitoring with mysupermon service we need to add scrape jobs to prometheus configmap.
+But before that we need to setup the prometheus monitoring for that follow this document [`Setup Prometheus Monitoring`](https://tutorials.keptn.sh/tutorials/keptn-full-tour-prometheus-09/index.html?index=..%2F..index#12).
+
+1. Edit prometheus configmap using following command.
+   ```console
+   kubectl edit configmap prometheus-server -n monitoring
+   ```
+   
+2. Add following scrape job to the configmap `scrape_configs:`.
+   ```yml
+   ...
+   job_name: mysupermon-service
+   honor_timestamps: false
+   scrape_interval: 10s
+   scrape_timeout: 10s
+   metrics_path: /metrics
+   scheme: http 
+   static_configs:
+   - targets:
+           - mysupermon-service.keptn.svc:8080
+   ...
+   ```
+3. To verify that the mySuperMon-service scrape jobs are correctly set up, you can access Prometheus by enabling port-forwarding for the prometheus-service:
+   
+   ```console
+   kubectl port-forward svc/prometheus-server 8080:80 -n monitoring
+   ```
+   Prometheus is then available on [`localhost:8080/targets`](http://localhost:8080/targets) where you can see the targets for the service:
+
+   ![](./images/prometheus.png)
 
 ### Usage
 

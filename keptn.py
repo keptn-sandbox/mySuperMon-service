@@ -409,4 +409,3 @@ def start_polling(keptn_api_endpoint, keptn_api_token):
     return x
 
 
-

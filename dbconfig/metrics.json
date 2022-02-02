@@ -1,0 +1,25 @@
+{
+  "MongoDB": [
+    {
+      "name": "globalLock__totalTime",
+      "description": "Amount of memory in megabytes currently in use by this container."
+    },
+    {
+      "name": "opcounters__command",
+      "description": "Amount of memory in megabytes currently in use by this container."
+    },
+    {
+      "name": "opcounters__query",
+      "description": "Amount of memory in megabytes currently in use by this container."
+    },
+    {
+      "name": "connections__available",
+      "description": "Amount of memory in megabytes currently in use by this container."
+    }
+  ],
+  "MySQL": [],
+  "PostgreSQL": [],
+  "MSSQL": [],
+  "MariaDB": [],
+  "ORACLE": []
+}
